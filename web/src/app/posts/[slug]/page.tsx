@@ -1,5 +1,9 @@
-import { client } from '@/lib/client'
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { getPost } from '@/lib/api'
 
 interface Post {
   _id: string;
@@ -10,23 +14,42 @@ interface Post {
   author: string;
 }
 
-interface PostPageProps {
-  params: {
-    slug: string;
-  };
-}
+export default function PostPage() {
+  const params = useParams();
+  const slug = typeof params.slug === 'string' ? params.slug : '';
+    console.log("Fetching post with slug:", slug);
 
-export default async function PostPage({ params }: PostPageProps) {
-  let post: Post | null = null;
-  let error: string | null = null;
+  const [post, setPost] = useState<Post | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  try {
-    post = await client.fetch(
-      `*[_type == "post" && slug.current == "${params.slug}"][0]`
+  useEffect(() => {
+    if (!slug) {
+      setError("Slug not found in URL.");
+      setLoading(false);
+      return;
+    }
+
+    async function fetchPost() {
+      try {
+        const fetchedPost = await getPost(slug);
+        setPost(fetchedPost);
+      } catch (err) {
+        console.error("Failed to fetch post:", err);
+        setError("Failed to load post. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchPost();
+  }, [slug]);
+
+  if (loading) {
+    return (
+      <main className="flex min-h-screen flex-col items-center p-24">
+        <p className="text-lg">Loading post...</p>
+      </main>
     );
-  } catch (err) {
-    console.error("Failed to fetch post:", err);
-    error = "Failed to load post. Please try again later.";
   }
 
   if (error) {
@@ -68,14 +91,4 @@ export default async function PostPage({ params }: PostPageProps) {
   );
 }
 
-export async function generateStaticParams() {
-  try {
-    const posts: Post[] = await client.fetch('*[_type == "post"]');
-    return posts.map((post) => ({
-      slug: post.slug.current,
-    }));
-  } catch (err) {
-    console.error("Failed to generate static params:", err);
-    return []; // Return an empty array to prevent build errors
-  }
-}
+

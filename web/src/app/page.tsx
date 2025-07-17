@@ -1,4 +1,4 @@
-import { client } from '@/lib/client'
+import { getAllPosts } from '@/lib/api'
 import Link from 'next/link'
 
 interface Post {
@@ -15,7 +15,7 @@ export default async function Home() {
   let error: string | null = null;
 
   try {
-    posts = await client.fetch('*[_type == "post"]');
+    posts = await getAllPosts();
   } catch (err) {
     console.error("Failed to fetch posts:", err);
     error = "Failed to load posts. Please try again later.";
