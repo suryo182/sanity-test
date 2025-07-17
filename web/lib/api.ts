@@ -11,12 +11,12 @@ interface Post {
 
 export async function getPost(slug: string): Promise<Post | null> {
   try {
-    const query = `*[_type == "post" && slug.current == "${slug}"][0]`;
-    console.log("Executing GROQ query:", query);
-    const post: Post = await client.fetch(query);
+    const post: Post = await client.fetch(
+      `*[_type == "post" && slug.current == "${slug}"][0]`
+    );
     return post;
   } catch (err) {
-    console.error("Failed to fetch post with query:", err);
+    console.error("Failed to fetch post:", err);
     return null;
   }
 }

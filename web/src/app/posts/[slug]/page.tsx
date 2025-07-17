@@ -17,7 +17,6 @@ interface Post {
 export default function PostPage() {
   const params = useParams();
   const slug = typeof params.slug === 'string' ? params.slug : '';
-    console.log("Fetching post with slug:", slug);
 
   const [post, setPost] = useState<Post | null>(null);
   const [error, setError] = useState<string | null>(null);
