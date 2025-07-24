@@ -74,7 +74,7 @@ export default function PostPage() {
   }
 
   return (
-    <main className="flex flex-col items-center pt-24 px-16 md:pt-32 md:px-24 lg:pt-40 lg:px-32 max-w-4xl mx-auto min-h-screen">
+    <main className="flex flex-col items-center pt-24 px-16 md:pt-32 md:px-24 lg:pt-40 lg:px-32 max-w-4xl mx-auto">
       <Link href="/">
         <button className="self-start mb-8 px-6 py-2 bg-gray-200 text-gray-800 rounded-full hover:bg-gray-300 transition-colors text-sm">← Back to all posts</button>
       </Link>

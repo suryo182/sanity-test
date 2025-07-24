@@ -3,7 +3,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { parseUTMParams, storeUTMParams } from "@/lib/utm";
+import UTMFooter from "@/components/UTMFooter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -20,23 +22,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [utmSource, setUtmSource] = useState('');
-  const [utmMedium, setUtmMedium] = useState('');
-
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const source = urlParams.get('utm_source');
-    const medium = urlParams.get('utm_medium');
-
-    if (source) {
-      localStorage.setItem('utm_source', source);
-    }
-    if (medium) {
-      localStorage.setItem('utm_medium', medium);
-    }
-
-    setUtmSource(localStorage.getItem('utm_source') || '');
-    setUtmMedium(localStorage.getItem('utm_medium') || '');
+    const utmParams = parseUTMParams(window.location.search);
+    storeUTMParams(utmParams);
   }, []);
 
   return (
@@ -47,10 +35,7 @@ export default function RootLayout({
         <div className="flex-grow">
           {children}
         </div>
-        <footer className="w-full p-4 bg-gray-800 text-white text-center">
-          <p>UTM Source: {utmSource || 'N/A'}</p>
-          <p>UTM Medium: {utmMedium || 'N/A'}</p>
-        </footer>
+        <UTMFooter />
       </body>
     </html>
   );
